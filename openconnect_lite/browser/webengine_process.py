@@ -236,7 +236,7 @@ def to_str(qval):
 
 def get_selectors(rules, credentials):
     statements = []
-    for rule in rules:
+    for i, rule in enumerate(rules):
         selector = json.dumps(rule.selector)
         if rule.action == "stop":
             statements.append(
@@ -256,6 +256,6 @@ def get_selectors(rules, credentials):
                 )
         elif rule.action == "click":
             statements.append(
-                f"""var elem = document.querySelector({selector}); if (elem) {{ elem.dispatchEvent(new Event("focus")); elem.click(); }}"""
+                f"""(function(){{ window.__ocl_clicks = window.__ocl_clicks || {{}}; var _k = 'click_{i}'; if (window.__ocl_clicks[_k]) return; var elem = document.querySelector({selector}); if (elem) {{ elem.dispatchEvent(new Event("focus")); elem.click(); window.__ocl_clicks[_k] = true; }} }})();"""
             )
     return "\n".join(statements)
